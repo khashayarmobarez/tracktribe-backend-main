@@ -7,6 +7,7 @@ export class UpdateUserDto implements Partial<CreateUserDto> {
   password_hash?: string;
   avatar_url?: string;
   gender?: string;
+  age?: number;
   birth_date?: string;
   city?: string;
   bio?: string;

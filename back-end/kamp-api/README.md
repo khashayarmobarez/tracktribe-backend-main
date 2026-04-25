@@ -48,6 +48,7 @@ Use this JSON body for `POST /users`:
   "password_hash": "test-hash",
   "avatar_url": "https://example.com/avatars/jane.jpg",
   "gender": "female",
+  "age": 28,
   "birth_date": "1998-05-21",
   "city": "Toronto",
   "bio": "Fitness enthusiast and event organizer.",

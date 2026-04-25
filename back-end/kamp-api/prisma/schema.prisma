@@ -14,6 +14,7 @@ model User {
   password_hash         String
   avatar_url            String?
   gender                String?
+  age                   Int?
   birth_date            DateTime? @db.Date
   city                  String?
   bio                   String?
