@@ -4,6 +4,14 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  organizer
+  coach
+  admin
 }
 
 model User {
@@ -18,7 +26,7 @@ model User {
   birth_date            DateTime? @db.Date
   city                  String?
   bio                   String?
-  role                  String    @default("user")
+  role                  Role      @default(user)
   organizer_verified_at DateTime?
   coach_verified_at     DateTime?
   created_at            DateTime  @default(now())
