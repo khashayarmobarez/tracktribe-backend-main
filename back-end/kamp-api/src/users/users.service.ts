@@ -78,13 +78,6 @@ export class UsersService {
       ...rest,
       password_hash,
       birth_date: userDto.birth_date ? new Date(userDto.birth_date) : undefined,
-      organizer_verified_at: userDto.organizer_verified_at
-        ? new Date(userDto.organizer_verified_at)
-        : undefined,
-      coach_verified_at: userDto.coach_verified_at
-        ? new Date(userDto.coach_verified_at)
-        : undefined,
-      last_login: userDto.last_login ? new Date(userDto.last_login) : undefined,
     };
   }
 
@@ -97,13 +90,6 @@ export class UsersService {
       ...rest,
       ...(password_hash ? { password_hash } : {}),
       birth_date: userDto.birth_date ? new Date(userDto.birth_date) : undefined,
-      organizer_verified_at: userDto.organizer_verified_at
-        ? new Date(userDto.organizer_verified_at)
-        : undefined,
-      coach_verified_at: userDto.coach_verified_at
-        ? new Date(userDto.coach_verified_at)
-        : undefined,
-      last_login: userDto.last_login ? new Date(userDto.last_login) : undefined,
     };
   }
 
