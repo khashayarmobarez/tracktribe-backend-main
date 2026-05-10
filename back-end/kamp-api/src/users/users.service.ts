@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -34,8 +35,9 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
+      const password_hash = await argon2.hash(createUserDto.password);
       return await this.prisma.user.create({
-        data: this.toCreateData(createUserDto),
+        data: this.toCreateData(createUserDto, password_hash),
       });
     } catch (error) {
       this.handlePrismaError(error);
@@ -46,9 +48,13 @@ export class UsersService {
     await this.findOne(id);
 
     try {
+      let password_hash: string | undefined;
+      if (updateUserDto.password) {
+        password_hash = await argon2.hash(updateUserDto.password);
+      }
       return await this.prisma.user.update({
         where: { id },
-        data: this.toUpdateData(updateUserDto),
+        data: this.toUpdateData(updateUserDto, password_hash),
       });
     } catch (error) {
       this.handlePrismaError(error);
@@ -63,9 +69,14 @@ export class UsersService {
     });
   }
 
-  private toCreateData(userDto: CreateUserDto): Prisma.UserCreateInput {
+  private toCreateData(
+    userDto: CreateUserDto,
+    password_hash: string,
+  ): Prisma.UserCreateInput {
+    const { password, ...rest } = userDto;
     return {
-      ...userDto,
+      ...rest,
+      password_hash,
       birth_date: userDto.birth_date ? new Date(userDto.birth_date) : undefined,
       organizer_verified_at: userDto.organizer_verified_at
         ? new Date(userDto.organizer_verified_at)
@@ -77,9 +88,14 @@ export class UsersService {
     };
   }
 
-  private toUpdateData(userDto: UpdateUserDto): Prisma.UserUpdateInput {
+  private toUpdateData(
+    userDto: UpdateUserDto,
+    password_hash?: string,
+  ): Prisma.UserUpdateInput {
+    const { password, ...rest } = userDto;
     return {
-      ...userDto,
+      ...rest,
+      ...(password_hash ? { password_hash } : {}),
       birth_date: userDto.birth_date ? new Date(userDto.birth_date) : undefined,
       organizer_verified_at: userDto.organizer_verified_at
         ? new Date(userDto.organizer_verified_at)

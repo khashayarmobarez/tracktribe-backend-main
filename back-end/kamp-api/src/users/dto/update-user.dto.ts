@@ -1,10 +1,16 @@
+import { IsString, IsOptional, MinLength } from 'class-validator';
 import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto implements Partial<CreateUserDto> {
   full_name?: string;
   phone_number?: string;
   email?: string;
-  password_hash?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  password?: string;
+
   avatar_url?: string;
   gender?: string;
   age?: number;
