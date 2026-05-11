@@ -6,6 +6,13 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  user
+  organizer
+  coach
+  admin
+}
+
 model User {
   id                    Int       @id @default(autoincrement())
   full_name             String
@@ -18,7 +25,7 @@ model User {
   birth_date            DateTime? @db.Date
   city                  String?
   bio                   String?
-  role                  String    @default("user")
+  role                  Role      @default(user)
   organizer_verified_at DateTime?
   coach_verified_at     DateTime?
   created_at            DateTime  @default(now())
