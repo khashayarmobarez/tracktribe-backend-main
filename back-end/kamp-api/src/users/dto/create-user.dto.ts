@@ -1,17 +1,17 @@
 import {
-  IsString,
-  IsNotEmpty,
-  MaxLength,
-  IsOptional,
-  Matches,
+  IsDateString,
   IsEmail,
-  MinLength,
-  IsUrl,
   IsIn,
   IsInt,
-  Min,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
   Max,
-  IsDateString,
+  MaxLength,
+  Min,
+  MinLength,
+  Matches,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -20,17 +20,17 @@ export class CreateUserDto {
   @MaxLength(100)
   full_name: string;
 
-  @IsOptional()
-  @IsString()
-  @Matches(/^\+?[1-9]\d{1,14}$/)
-  phone_number?: string;
-
   @IsEmail()
   email: string;
 
   @IsString()
   @MinLength(8)
   password: string;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\+?[1-9]\d{1,14}$/, { message: 'Invalid phone number format' })
+  phone_number?: string;
 
   @IsOptional()
   @IsUrl()

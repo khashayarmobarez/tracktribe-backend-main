@@ -1,40 +1,27 @@
 import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  MinLength,
-  MaxLength,
-  Matches,
-  IsEmail,
-  IsUrl,
+  IsDateString,
   IsIn,
   IsInt,
-  Min,
+  IsOptional,
+  IsString,
+  IsUrl,
   Max,
-  IsDateString,
+  MaxLength,
+  Min,
+  MinLength,
+  Matches,
 } from 'class-validator';
-import { CreateUserDto } from './create-user.dto';
 
-export class UpdateUserDto implements Partial<CreateUserDto> {
+export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @MaxLength(100)
   full_name?: string;
 
   @IsOptional()
   @IsString()
-  @Matches(/^\+?[1-9]\d{1,14}$/)
+  @Matches(/^\+?[1-9]\d{1,14}$/, { message: 'Invalid phone number format' })
   phone_number?: string;
-
-  @IsOptional()
-  @IsEmail()
-  email?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(8)
-  password?: string;
 
   @IsOptional()
   @IsUrl()
@@ -63,4 +50,9 @@ export class UpdateUserDto implements Partial<CreateUserDto> {
   @IsString()
   @MaxLength(500)
   bio?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  password?: string;
 }
