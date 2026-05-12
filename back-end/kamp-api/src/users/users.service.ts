@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+/** Internal type — keeps password_hash for auth verification paths */
 export type SafeUser = Omit<User, 'password_hash'>;
 
 @Injectable()
@@ -17,16 +18,16 @@ export class UsersService {
 
   async findAll(): Promise<SafeUser[]> {
     const users = await this.prisma.user.findMany({ orderBy: { id: 'asc' } });
-    return users.map(this.sanitize);
+    return users.map((u) => this.stripPasswordHash(u));
   }
 
   async findOne(id: number): Promise<SafeUser> {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException(`User ${id} not found`);
-    return this.sanitize(user);
+    return this.stripPasswordHash(user);
   }
 
-  // Internal — returns password_hash for auth verification
+  // Internal — returns full User object (including password_hash) for auth verification
   async findByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { email } });
   }
@@ -43,7 +44,7 @@ export class UsersService {
           birth_date: birth_date ? new Date(birth_date) : undefined,
         },
       });
-      return this.sanitize(user);
+      return this.stripPasswordHash(user);
     } catch (error) {
       this.handlePrismaError(error);
     }
@@ -64,7 +65,7 @@ export class UsersService {
           birth_date: birth_date ? new Date(birth_date) : undefined,
         },
       });
-      return this.sanitize(user);
+      return this.stripPasswordHash(user);
     } catch (error) {
       this.handlePrismaError(error);
     }
@@ -73,7 +74,7 @@ export class UsersService {
   async remove(id: number): Promise<SafeUser> {
     await this.findOne(id);
     const user = await this.prisma.user.delete({ where: { id } });
-    return this.sanitize(user);
+    return this.stripPasswordHash(user);
   }
 
   async updateLastLogin(id: number): Promise<void> {
@@ -83,9 +84,10 @@ export class UsersService {
     });
   }
 
-  private sanitize(user: User): SafeUser {
+  /** Strips password_hash from a single User object */
+  private stripPasswordHash(user: User): SafeUser {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password_hash, ...safe } = user;
+    const { password_hash: _password_hash, ...safe } = user;
     return safe;
   }
 
