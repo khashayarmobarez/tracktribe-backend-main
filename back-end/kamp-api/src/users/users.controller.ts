@@ -6,13 +6,17 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post,
+  Req,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import type { Request } from 'express';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -26,21 +30,28 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() req: Request,
   ) {
+    const user = req.user as { id: number; email: string; role: string };
+    if (user.id !== id && user.role !== 'admin') {
+      throw new UnauthorizedException('You can only update your own profile');
+    }
     return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+  ) {
+    const user = req.user as { id: number; email: string; role: string };
+    if (user.id !== id && user.role !== 'admin') {
+      throw new UnauthorizedException('You can only delete your own account');
+    }
     return this.usersService.remove(id);
   }
 }
