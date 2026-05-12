@@ -1,2 +1,4 @@
 allowBuilds:
-  argon2: false
+  argon2: true
+  "@prisma/engines": true
+  prisma: true
