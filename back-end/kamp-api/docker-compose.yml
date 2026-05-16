@@ -1,0 +1,16 @@
+# docker-compose.yml — place at back-end/kamp-api/
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kamp_user
+      POSTGRES_PASSWORD: kamp_password
+      POSTGRES_DB: kamp_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
